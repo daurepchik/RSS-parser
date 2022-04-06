@@ -20,7 +20,7 @@ error explanation. Exception tracebacks in stdout are prohibited in final versio
 * You have to write a file with documentation. Everything must be documented: how to run scripts, how to run tests, how to install the library and etc.
 
 ## [Iteration 1] One-shot command-line RSS reader.
-RSS reader should be a command-line utility which receives [RSS](wikipedia.org/wiki/RSS) URL and prints results in human-readable format.
+RSS reader should be a command-line utility which receives [RSS](https://ru.wikipedia.org/wiki/RSS) URL and prints results in human-readable format.
 
 You are free to choose format of the news console output. The textbox below provides an example of how it can be implemented:
 
