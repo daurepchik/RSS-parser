@@ -1,12 +1,14 @@
 import json
 import logging
-from urllib.request import urlopen
+from pathlib import Path
 import re
+import sys
+from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 import inflect
 
-from exceptions import ArgumentError
+from .exceptions import ArgumentError
 
 logger = logging.getLogger('RSSReader.rss_parser')
 p = inflect.engine()
@@ -66,24 +68,32 @@ def parse_rss_feed(url, limit):
     soup = create_soup_parser(content)
     feed_items = []
     logger.info('Searching for RSS feed items')
-    for item in soup.find_all('item', limit=limit):
-        item_dict = {
-            'title': item.title.string,
-            'date': item.pubDate.string,
+    try:
+        for item in soup.find_all('item', limit=limit):
+            item_dict = {'title': BeautifulSoup(item.title.string, 'lxml').text}
+            if item.pubDate:
+                item_dict['date'] = item.pubDate.string
+            if item.link:
+                item_dict['link'] = item.link.string
+            if item.description:
+                item_dict['description'] = BeautifulSoup(item.description.string, 'lxml').text
+            feed_items.append(item_dict)
+        logger.info('OK. RSS feed items found')
+        logger.info('Creating RSS feed dictionary')
+        feed = {
+            'title': soup.title.string,
+            'description': BeautifulSoup(soup.description.string, 'lxml').text.strip('\n')
+            if soup.description.string
+            else 'Empty',
+            'link': soup.find('link', text=re.compile(r'\w+')).string,
+            'items': feed_items,
         }
-        if item.link:
-            item_dict['link'] = item.link.string
-        if item.description:
-            item_dict['description'] = BeautifulSoup(item.description.string, 'lxml').text
-        feed_items.append(item_dict)
-    logger.info('OK. RSS feed items found')
-    logger.info('Creating RSS feed dictionary')
-    feed = {
-        'title': soup.title.string,
-        'description': BeautifulSoup(soup.description.string, 'lxml').text.strip('\n'),
-        'link': soup.find('link', text=re.compile(r'\w+')).string,
-        'items': feed_items,
-    }
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        file_name = Path(__file__).parent.name
+        logger.error(f'{exc_type.__name__}: {e}. File: {file_name}. Line №: {exc_tb.tb_lineno}. '
+                     f'Function: parse_rss_feed(url, limit)')
+        raise
     logger.info('OK. RSS feed dictionary created')
     logger.info(f'OK. Parsed RSS feed')
     return feed

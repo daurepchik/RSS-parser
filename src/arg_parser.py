@@ -1,8 +1,8 @@
 import argparse
 import logging
 
-from exceptions import ArgumentError
-import settings
+from .exceptions import ArgumentError
+from . import settings
 
 logger = logging.getLogger('RSSReader.arg_parser')
 
