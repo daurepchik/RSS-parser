@@ -6,11 +6,12 @@ import sys
 from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
-from dateutil import parser
+import inflect
 
 from exceptions import ArgumentError
 
 logger = logging.getLogger('RSSReader.rss_parser')
+p = inflect.engine()
 
 
 def connect_to_url(url):
@@ -69,18 +70,17 @@ def parse_rss_feed(url, limit):
     logger.info('Searching for RSS feed items')
     try:
         for item in soup.find_all('item', limit=limit):
-            item_dict = {
-                'title': BeautifulSoup(item.title.string, 'lxml').text,
-                'date': str(parser.parse(item.pubDate.string)) if item.pubDate else 'Empty',
-                'link': item.link.string if item.link else 'Empty',
-                'description': BeautifulSoup(item.description.string, 'lxml').text
-                if item.description
-                else 'Empty'
-            }
+            item_dict = {'title': BeautifulSoup(item.title.string, 'lxml').text}
+            if item.pubDate:
+                item_dict['date'] = item.pubDate.string
+            if item.link:
+                item_dict['link'] = item.link.string
+            if item.description:
+                item_dict['description'] = BeautifulSoup(item.description.string, 'lxml').text
             feed_items.append(item_dict)
         logger.info('OK. RSS feed items found')
         logger.info('Creating RSS feed dictionary')
-        feed_dict = {
+        feed = {
             'title': soup.title.string,
             'description': BeautifulSoup(soup.description.string, 'lxml').text.strip('\n')
             if soup.description.string
@@ -90,20 +90,20 @@ def parse_rss_feed(url, limit):
         }
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
-        file_name = '/'.join(Path(__file__).parts[-2:])
+        file_name = Path(__file__).parent.name
         logger.error(f'{exc_type.__name__}: {e}. File: {file_name}. Line №: {exc_tb.tb_lineno}. '
                      f'Function: parse_rss_feed(url, limit)')
         raise
     logger.info('OK. RSS feed dictionary created')
     logger.info(f'OK. Parsed RSS feed')
-    return feed_dict
+    return feed
 
 
 def feed_items_to_string(feed_items):
     """
     Function that converts array of feed items to prettified string for output
     :param feed_items: array of RSS feed items
-    :return: prettified string from feed items array
+    :return: prettified string of feed items array
     """
     logger.info('Converting feed items array to string for printing')
     items_string = ""
@@ -116,45 +116,25 @@ def feed_items_to_string(feed_items):
     return items_string
 
 
-def feed_to_string(feed):
-    """
-    Function that converts feed dictionary to prettified string for output
-    :param feed: RSS feed as python dictionary
-    :return: prettified string from feed dictionary
-    """
-    logger.info('Converting feed dictionary to prettified string')
-    output_text = f"""Feed: {feed['title']}
-Description: {feed['description']}
-Feed Link: {feed['link']}
-
-{feed_items_to_string(feed['items'])}"""
-    logger.info('OK. Feed converted to string')
-    return output_text
-
-
 def print_feed(url, limit, as_json):
     """
     Function that prints parsed RSS feed to console
     :param url: url of website with feed xml data
     :param limit: integer number of feed items to limit
     :param as_json: boolean parameter to define output as json or not
-    :return: dictionary with feed information
+    :return: prints output to console
     """
     feed = parse_rss_feed(url, limit)
-    output_text = feed_to_string(feed)
-    logger.info(f'Printing RSS feed in {url}')
-    try:
-        if as_json:
-            logger.info('Printing RSS feed as JSON')
-            print(json.dumps(feed, indent=2, sort_keys=False))
-        else:
-            logger.info('Printing RSS feed as usual')
-            print(output_text)
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        file_name = '/'.join(Path(__file__).parts[-2:])
-        logger.error(f'{exc_type.__name__}: {e}. File: {file_name}. Line №: {exc_tb.tb_lineno}. '
-                     f'Function: print_feed')
-        raise
+    output_text = f"""Feed: {feed['title']}
+Description: {feed['description']}
+Feed Link: {feed['link']}
+
+{feed_items_to_string(feed['items'])}"""
+    logger.info(f'Printing RSS feed in {url}, limited to {limit} {p.plural("item", limit)}')
+    if as_json:
+        logger.info('Printing RSS feed as JSON')
+        print(json.dumps(feed, indent=2, sort_keys=False))
+    else:
+        logger.info('Printing RSS feed as usual')
+        print(output_text)
     logger.info(f'OK. RSS feed printed')
-    return feed
