@@ -6,3 +6,5 @@ from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 LOGGER_LEVEL = INFO
 
 VERSION = 3.1
+
+SHRUG_EMOJI = r'¯\_(ツ)_/¯'

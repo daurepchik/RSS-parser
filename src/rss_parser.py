@@ -133,17 +133,14 @@ Feed Link: {feed['link']}
     return output_text
 
 
-def print_feed(url, limit, as_json):
+def print_feed(feed, as_json):
     """
     Function that prints parsed RSS feed to console
-    :param url: url of website with feed xml data
-    :param limit: integer number of feed items to limit
+    :param feed: dictionary with parsed RSS feed to be printed
     :param as_json: boolean parameter to define output as json or not
     :return: dictionary with feed information
     """
-    feed = parse_rss_feed(url, limit)
     output_text = feed_to_string(feed)
-    logger.info(f'Printing RSS feed in {url}')
     try:
         if as_json:
             logger.info('Printing RSS feed as JSON')
@@ -158,4 +155,3 @@ def print_feed(url, limit, as_json):
                      f'Function: print_feed')
         raise
     logger.info(f'OK. RSS feed printed')
-    return feed

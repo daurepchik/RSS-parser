@@ -8,7 +8,8 @@ from urllib.request import urlretrieve
 
 from dateutil.parser import parse, ParserError
 
-from rss_parser import feed_to_string
+from rss_parser import print_feed
+from settings import SHRUG_EMOJI
 
 _FILE_PATH = Path(__file__).parent.parent
 _CACHE_FILE_PATH = _FILE_PATH / 'CachedFeeds' / 'feeds_cache.json'
@@ -50,9 +51,9 @@ def cache_feed(url, feed):
         for item in feed['items']:
             item_hash = hashlib.md5(bytes(item['title'], 'UTF-8')).hexdigest()
             if item['img'] != 'Empty':
-                logger.info('Saving item\'s image into images folder')
+                logger.info('Caching item\'s image into images folder')
                 urlretrieve(item['img'], _CACHE_IMGS_PATH / f'{item_hash}.jpg')
-                logger.info('OK. Item\'s Image saved')
+                logger.info('OK. Item\'s Image cached')
             logger.info('Checking if feed item is already cached')
             if item_hash not in items_hashes:
                 try:
@@ -96,11 +97,12 @@ def print_cached_feed(date, url, limit, as_json):
     news_cache = _open_cached_feed()
     if len(news_cache) == 0:
         logger.info('Feed cache is not created yet')
-        print('Check logs')
+        print(f'No output? Check the logs then {SHRUG_EMOJI}')
         return
     try:
+        item_counter = 0
         for netloc, cached_feed in filter(lambda x: x[0] == urlparse(url).netloc if url else x[0], news_cache.items()):
-            logger.info(f'Printing cashed feed from {netloc}')
+            logger.info(f'Printing cashed feed from "{netloc}"')
             if date in cached_feed['dates']:
                 item_date, items = list(filter(lambda x: x[0] == date, cached_feed['dates'].items()))[0]
                 feed = {
@@ -109,15 +111,13 @@ def print_cached_feed(date, url, limit, as_json):
                     'link': cached_feed['link'],
                     'items': items[:limit]
                 }
-                output_text = feed_to_string(feed)
-
-                if as_json:
-                    logger.info('Printing cached RSS feed as JSON')
-                    print(json.dumps(feed, indent=2, sort_keys=False))
-                else:
-                    logger.info('Printing cached RSS feed as usual')
-                    print(output_text)
-        logger.info(f'OK. Cached RSS feed printed')
+                print_feed(feed, as_json)
+                logger.info(f'OK. Cached RSS feed is printed')
+                item_counter += 1
+            else:
+                logger.warning(f'Not found items for "{netloc}" on provided date')
+        if not item_counter:
+            print(f'No items? Check the logs then {SHRUG_EMOJI}')
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file_name = '/'.join(Path(__file__).parts[-2:])

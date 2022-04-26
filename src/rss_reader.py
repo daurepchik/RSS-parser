@@ -3,8 +3,8 @@ import sys
 
 from arg_parser import create_arg_parser, check_args, logger as arg_parser_logger
 from feed_cacher import cache_feed, print_cached_feed, logger as feed_cacher_logger
-from rss_parser import print_feed, logger as rss_parser_logger
-from settings import LOGGER_LEVEL
+from rss_parser import parse_rss_feed, print_feed, logger as rss_parser_logger
+from settings import LOGGER_LEVEL, SHRUG_EMOJI
 
 main_logger = logging.getLogger('RSSReader')
 main_logger.setLevel(LOGGER_LEVEL)
@@ -28,7 +28,8 @@ def main():
     try:
         check_args(args)
         if not args.date:
-            feed = print_feed(args.URL, args.limit, args.json)
+            feed = parse_rss_feed(args.URL, args.limit)
+            print_feed(feed, args.json)
             cache_feed(args.URL, feed)
         else:
             print_cached_feed(args.date, args.URL, args.limit, args.json)
@@ -36,7 +37,7 @@ def main():
         if args.verbose:
             # TODO: remove raise line
             raise
-            sys.exit(f'Error occurred. Try again with "--verbose" option for more information')
+            sys.exit(f'Error occurred {SHRUG_EMOJI}. Try again with "--verbose" option for more information')
         else:
             sys.exit()
     main_logger.info('Program end')
