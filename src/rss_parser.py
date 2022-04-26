@@ -74,13 +74,14 @@ def parse_rss_feed(url, limit):
                 'date': str(parser.parse(item.pubDate.string)) if item.pubDate else 'Empty',
                 'link': item.link.string if item.link else 'Empty',
                 'description': BeautifulSoup(item.description.string, 'lxml').text
-                if item.description
-                else 'Empty'
+                                if item.description
+                                else 'Empty',
+                'img': item.find('media:content')['url'] if item.find('media:content') else 'Empty'
             }
             feed_items.append(item_dict)
         logger.info('OK. RSS feed items found')
         logger.info('Creating RSS feed dictionary')
-        feed_dict = {
+        feed = {
             'title': soup.title.string,
             'description': BeautifulSoup(soup.description.string, 'lxml').text.strip('\n')
             if soup.description.string
@@ -96,7 +97,7 @@ def parse_rss_feed(url, limit):
         raise
     logger.info('OK. RSS feed dictionary created')
     logger.info(f'OK. Parsed RSS feed')
-    return feed_dict
+    return feed
 
 
 def feed_items_to_string(feed_items):

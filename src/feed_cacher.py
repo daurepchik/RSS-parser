@@ -4,16 +4,19 @@ import logging
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib.request import urlretrieve
 
 from dateutil.parser import parse, ParserError
 
 from rss_parser import feed_to_string
 
-_cache_file_path = Path(__file__).parent.parent / 'CachedFeeds' / 'feeds_cache.json'
+_FILE_PATH = Path(__file__).parent.parent
+_CACHE_FILE_PATH = _FILE_PATH / 'CachedFeeds' / 'feeds_cache.json'
+_CACHE_IMGS_PATH = _FILE_PATH / 'CachedFeeds' / 'CachedFeedImages'
 logger = logging.getLogger('RSSReader.feed_cacher')
 
 
-def open_cached_feed():
+def _open_cached_feed():
     """
     Function to open cached json file with news if exists, and convert it to python dictionary. Else create new
     dictionary
@@ -21,8 +24,8 @@ def open_cached_feed():
     """
     logger.info('Opening cached views')
     news_cache = {}
-    if _cache_file_path.exists():
-        with open(_cache_file_path) as fr:
+    if _CACHE_FILE_PATH.exists():
+        with open(_CACHE_FILE_PATH) as fr:
             news_cache = json.load(fr)
     logger.info('OK. Cached views opened')
     return news_cache
@@ -35,9 +38,9 @@ def cache_feed(url, feed):
     :param feed: dictionary created after parsing RSS feed
     :return: writes cached rss feed to file
     """
-    feeds_cache = open_cached_feed()
+    feeds_cache = _open_cached_feed()
     netloc = urlparse(url).netloc
-    logger.info(f'Caching feed into {_cache_file_path.name}')
+    logger.info(f'Caching feed into {_CACHE_FILE_PATH.name}')
     logger.info('Putting data into dictionary with correct format for caching')
     try:
         feeds_cache[netloc] = feeds_cache.get(netloc, {})
@@ -46,6 +49,10 @@ def cache_feed(url, feed):
         dates = feeds_cache[netloc].get('dates', {})
         for item in feed['items']:
             item_hash = hashlib.md5(bytes(item['title'], 'UTF-8')).hexdigest()
+            if item['img'] != 'Empty':
+                logger.info('Saving item\'s image into images folder')
+                urlretrieve(item['img'], _CACHE_IMGS_PATH / f'{item_hash}.jpg')
+                logger.info('OK. Item\'s Image saved')
             logger.info('Checking if feed item is already cached')
             if item_hash not in items_hashes:
                 try:
@@ -65,7 +72,7 @@ def cache_feed(url, feed):
         feeds_cache[netloc]['dates'] = dates
         logger.info('OK. Dictionary for feed caching is created')
         logger.info('Writing dictionary into file')
-        with open(_cache_file_path, 'w') as fw:
+        with open(_CACHE_FILE_PATH, 'w') as fw:
             json.dump(feeds_cache, fw, indent=2, sort_keys=False)
         logger.info('OK. File with Cached feed is created')
     except Exception as e:
@@ -86,14 +93,14 @@ def print_cached_feed(date, url, limit, as_json):
     :param as_json: define in which format to print the result, json or string
     :return: prints the output
     """
-    news_cache = open_cached_feed()
+    news_cache = _open_cached_feed()
     if len(news_cache) == 0:
         logger.info('Feed cache is not created yet')
         print('Check logs')
         return
     try:
         for netloc, cached_feed in filter(lambda x: x[0] == urlparse(url).netloc if url else x[0], news_cache.items()):
-            logger.info(f'Printing cashed {netloc}')
+            logger.info(f'Printing cashed feed from {netloc}')
             if date in cached_feed['dates']:
                 item_date, items = list(filter(lambda x: x[0] == date, cached_feed['dates'].items()))[0]
                 feed = {
