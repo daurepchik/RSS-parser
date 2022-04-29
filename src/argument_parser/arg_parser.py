@@ -2,8 +2,8 @@ import argparse
 import logging
 import re
 
-from exceptions import ArgumentError
-import settings
+from exceptions.custom_exceptions import ArgumentError
+from  settings.settings import VERSION
 
 logger = logging.getLogger('RSSReader.arg_parser')
 
@@ -19,12 +19,14 @@ def create_arg_parser():
         description="Pure Python command-line RSS reader"
     )
     parser.add_argument('URL', nargs='?', default=False, help='RSS URL')
-    parser.add_argument('--version', '-V', action='version', version=f'{parser.prog}: {settings.VERSION}',
+    parser.add_argument('--version', '-V', action='version', version=f'{parser.prog}: {VERSION}',
                         help='print version info')
     parser.add_argument('--json', '-j', action='store_true', help='print result as JSON in stdout')
     parser.add_argument('--verbose', '-v', action='store_false', help='outputs verbose status messages')
     parser.add_argument('--limit', '-l', type=int, help='limit news topics if this parameter provided')
     parser.add_argument('--date', '-d', help='get news from cache. Date format: YYYYMMDD')
+    parser.add_argument('--to-html', action='store_true', help='convert fetched RSS feed to HTML format')
+    parser.add_argument('--to-pdf', action='store_true', help='convert fetched RSS feed to PDF format')
     return parser.parse_args()
 
 

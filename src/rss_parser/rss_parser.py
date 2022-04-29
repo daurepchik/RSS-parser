@@ -8,7 +8,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from dateutil import parser
 
-from exceptions import ArgumentError
+from exceptions.custom_exceptions import ArgumentError
 
 logger = logging.getLogger('RSSReader.rss_parser')
 
@@ -138,7 +138,6 @@ def print_feed(feed, as_json):
     Function that prints parsed RSS feed to console
     :param feed: dictionary with parsed RSS feed to be printed
     :param as_json: boolean parameter to define output as json or not
-    :return: dictionary with feed information
     """
     output_text = feed_to_string(feed)
     try:
