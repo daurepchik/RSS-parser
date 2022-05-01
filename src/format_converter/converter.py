@@ -1,5 +1,6 @@
 import hashlib
 import logging
+import shutil
 import sys
 from pathlib import Path
 import uuid
@@ -43,9 +44,23 @@ def convert_to_html(feeds):
     formats information to html file
     :param feeds: array of feed
     """
+    logger.info('Creating RSS feed in HTML format')
+    html_file_name = f"rss_feed_{str(uuid.uuid4())[:6]}.html"
     try:
-        logger.info('Creating RSS feed in HTML format')
-        html_file_name = f"rss_feed_{str(uuid.uuid4())[:6]}.html"
+        if not FORMAT_TARGET_PATH.exists():
+            logger.info('Creating directory for HTML files')
+            FORMAT_TARGET_PATH.mkdir()
+            logger.info('OK. Directory for HTML files is created')
+        html_template_files_path = FORMAT_TARGET_PATH / 'html_template_files'
+        if not html_template_files_path.exists():
+            logger.info('Creating directory for HTML files\' dependencies')
+            shutil.copytree(TEMPLATES_LOCATION / 'html_template_files', html_template_files_path)
+            logger.info('OK. Directory for HTML files\' dependencies is created')
+        elif not any(html_template_files_path.iterdir()):
+            html_template_files_path.rmdir()
+            logger.info('Creating directory for HTML files\' dependencies')
+            shutil.copytree(TEMPLATES_LOCATION / 'html_template_files', html_template_files_path)
+            logger.info('OK. Directory for HTML files\' dependencies is created')
         target_path = FORMAT_TARGET_PATH / html_file_name
         logger.info(f'Writing file to {target_path}')
         template = setup_jinja()
@@ -58,6 +73,16 @@ def convert_to_html(feeds):
     except jinja2.exceptions.TemplateNotFound:
         logger.error("Something happened to HTML template")
         raise
+    except FileNotFoundError:
+        logger.error(f"Something happened to destination folder: {target_path}")
+        raise
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        file_name = '/'.join(Path(__file__).parts[-2:])
+        logger.error(f'{exc_type.__name__}: {e}. File: {file_name}. Line №: {exc_tb.tb_lineno}. '
+                     f'Function: convert_to_html')
+        html_template_files_path.rmdir()
+        raise
 
 
 def convert_to_pdf(feeds):
@@ -67,10 +92,10 @@ def convert_to_pdf(feeds):
     then converts everything into pdf file
     :param feeds: array of feed
     """
+    logger.info('Creating RSS feed in PDF format')
+    pdf_file_name = f"rss_feed_{str(uuid.uuid4())[0:6]}.pdf"
+    target_path = FORMAT_TARGET_PATH / pdf_file_name
     try:
-        logger.info('Creating RSS feed in PDF format')
-        pdf_file_name = f"rss_feed_{str(uuid.uuid4())[0:6]}.pdf"
-        target_path = FORMAT_TARGET_PATH / pdf_file_name
         logger.info(f'Writing file to {target_path}')
         template = setup_jinja()
         source_html_text = template.render(feeds=feeds)
@@ -78,7 +103,7 @@ def convert_to_pdf(feeds):
             pisa.CreatePDF(source_html_text, dest=target, encoding='utf-8')
         logger.info('OK. PDF file created')
     except FileNotFoundError:
-        logger.error('Something happened to destination folder')
+        logger.error(f'Something happened to destination folder: {target_path}')
         raise
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()

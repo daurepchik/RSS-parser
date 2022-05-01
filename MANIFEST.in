@@ -1,0 +1,2 @@
+include src/format_converter/templates/*
+include src/format_converter/templates/html_template_files/*
