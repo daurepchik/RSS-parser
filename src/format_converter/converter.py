@@ -67,6 +67,7 @@ def convert_to_html(feeds):
         with open(target_path, 'w+', encoding='utf-8') as file:
             file.write(template.render(feeds=feeds))
         logger.info('OK. HTML file created')
+        print(f'HTML file path: {target_path}')
     except TypeError:
         logger.error("Not valid path or input data.")
         raise
@@ -102,12 +103,13 @@ def convert_to_pdf(feeds):
         with open(target_path, "w+b") as target:
             pisa.CreatePDF(source_html_text, dest=target, encoding='utf-8')
         logger.info('OK. PDF file created')
+        print(f'PDF file path: {target_path}')
     except FileNotFoundError:
         logger.error(f'Something happened to destination folder: {target_path}')
         raise
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file_name = '/'.join(Path(__file__).parts[-2:])
-        logger.error(f'{exc_type.__name__}: {e}. File: {file_name}. Line №: {exc_tb.tb_lineno}. '
-                     f'Function: convert_to_pdf')
+        logger.error(f'{exc_type.__name__}: {e}. \nFile: {file_name}. \nLine №: {exc_tb.tb_lineno}. '
+                     f'\nFunction: convert_to_pdf')
         raise

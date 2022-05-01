@@ -1,22 +1,4 @@
 @charset "utf-8";
-
-/*------------------------------------------------------------------
-[Master Stylesheet]
-
-Project:        News365 - Responsive HTML Template
-Version:        1.0
-Last change:    01/10/2016
-Primary use:    Newspaper & Magazine
-Author:         BDTASK
-URL:            https://themeforest.net/user/bdtask
--------------------------------------------------------------------*/
-
-
-/*
-This file contains the common info of this theme.
-*/
-
-
 /*------------------------------------------------------------------
 [Table of contents]
     * Header & Navigation
@@ -28,7 +10,7 @@ This file contains the common info of this theme.
             * All Pages
                * Home Style one
                * Home Style two
-               * Catagories
+               * Categories
                   * Category style one
                   * Category style two
                   * Category style three
@@ -38,10 +20,6 @@ This file contains the common info of this theme.
                 * News
                   * News post one
                   * News post two
-                * Contact
-                  * Contact Style one
-                  * Contact Styletwo
-                * Login & Registration
 
     * Body 
       * Slider News
@@ -49,16 +27,8 @@ This file contains the common info of this theme.
       * Different Categories News
       * online vote 
       * video
-      * Flicker widget 
-    * Contact
-      * Address
-      * Contact Form
-      * Google Map
+      * Flicker widget
     * Footer Area
-      * Newsletter
-      * Featured news
-      * Top rated
-      * Address
       * Sub footer 
 * ===============================================*/
 
@@ -1267,138 +1237,6 @@ header {
     font-size: 11px;
     text-align: center;
     display: block;
-}
-
-
-/*** Tab 
--------------------------------------------*/
-
-.tab-inner {
-    overflow: hidden;
-    line-height: 1.5;
-    font-weight: 300;
-    color: #888;
-    -webkit-font-smoothing: antialiased;
-    background-color: #f6f6f6;
-    padding: 10px 30px;
-}
-
-.tabs {
-    display: table;
-    position: relative;
-    overflow: hidden;
-    margin: 0;
-    width: 100%;
-    padding: 0px;
-}
-
-.tabs li {
-    float: left;
-    line-height: 32px;
-    overflow: hidden;
-    padding: 0;
-    position: relative;
-    margin-right: -2px;
-    width: 50%;
-}
-
-.tabs a {
-    background-color: transparent;
-    color: #7E7E7E;
-    display: block;
-    letter-spacing: 0;
-    outline: none;
-    padding: 0;
-    text-decoration: none;
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    border: 0;
-    font-size: 13px;
-    text-align: center;
-    font-weight: 700;
-}
-
-.tab-item-inner {
-    display: none;
-}
-
-.tab-inner hr {
-    border: none;
-    border-top: 1px solid #fff;
-    margin: 0px -30px 20px;
-}
-
-.tab-item-inner:first-child {
-    display: block;
-}
-
-.current a {
-    position: relative;
-    border-bottom: 1px solid #f60d2b;
-    color: #111;
-}
-
-.box-item {
-    position: relative;
-    padding-bottom: 20px;
-}
-
-.box-item .img-thumb {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-}
-
-.td-module-title a {
-    color: #111;
-}
-
-.box-item .item-details {
-    margin-left: 120px;
-    min-height: 85px;
-}
-
-.tab-inner .box-item .item-details {
-    margin-left: 105px;
-    min-height: 80px;
-}
-
-.item-details .sub-category-title {
-    font-family: "Lato", sans-serif;
-    display: inline-block;
-    padding: 4px 8px;
-    color: #fff;
-    margin: 0px;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1px;
-}
-
-.item-details .sub-category-title a {
-    color: #fff
-}
-
-.box-item .td-module-title {
-    font-size: 13px;
-    line-height: 18px;
-    font-weight: 500;
-    margin-top: 4px;
-    margin-bottom: 4px;
-}
-
-.tab-inner .box-item .td-module-title {
-    font-size: 13px;
-    line-height: 16px;
-}
-
-.tab-inner .item-details .post-editor-date {
-    margin: 0;
-    font-size: 10px;
-}
-
-.box-item:hover .td-module-title a {
-    color: #f60d2b;
 }
 
 
@@ -3508,131 +3346,6 @@ a.expand {
     border-width: 3px 3px 0px 0px;
     border-color: #C44C4C transparent transparent;
 }
-
-
-/*** Contact page one & two 
--------------------------------------------*/
-
-.contact-title {
-    margin: 60px 0;
-    text-align: center;
-}
-
-.contact-form-area,
-.contact-form-area-2 {
-    margin-bottom: 80px;
-}
-
-#map {
-    width: 100%;
-    height: 320px;
-    margin: 20px 0;
-    border: 15px solid #f6f6f6;
-}
-
-.contact-address {
-    background-color: #f6f6f6;
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.contact-address h3 {
-    margin-top: 0px;
-}
-
-.contact-address .top-icon {
-    font-size: 60px;
-    color: #F70D2B;
-}
-
-.contact-title-2 {
-    margin: 60px 0;
-}
-
-.contact-address-2 {
-    padding: 20px;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.contact-form-area-2 textarea.input_field {
-    height: 240px;
-}
-
-.contact-icon-inner {
-    border: 1px solid #e9e9e9;
-    height: 50px;
-    width: 50px;
-    padding: 12px;
-    display: block;
-    margin-right: auto;
-    margin-left: auto;
-    border-radius: 50%;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -ms-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
-}
-
-.contact-address-2 .top-icon {
-    font-size: 25px;
-    color: #F70D2B;
-}
-
-.contact-address-2:hover .contact-icon-inner {
-    background-color: #F70D2B;
-    border-color: #F70D2B;
-}
-
-.contact-address-2:hover .top-icon {
-    color: #fff;
-}
-
-
-/*** Login & Registration Page
--------------------------------------------*/
-
-.login-reg-inner {
-    margin: 70px 0;
-}
-
-.login-reg-inner .form-control {
-    height: 40px;
-    border-radius: 0;
-    box-shadow: none;
-}
-
-.login-reg-inner .form-control:focus {
-    border-color: #f60d2b;
-}
-
-.login-reg-inner label {
-    font-weight: normal;
-    margin: 15px 0 10px;
-    display: block;
-    font-family: 'Ubuntu', sans-serif;
-}
-
-.login-reg-inner label sup {
-    color: #f60d2b;
-}
-
-.register-form-inner .btn-style {
-    float: right;
-    margin-top: 20px;
-}
-
-.login-reg-inner .foeget a {
-    margin: 15px 0;
-    display: block;
-}
-
-.login-reg-inner .social_icon {
-    margin-bottom: 10px;
-}
-
 
 /*** Responsive
 -------------------------------------------*/

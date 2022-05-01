@@ -5,6 +5,7 @@ CachedFeeds
 *.html
 *.pdf
 test
+FormatConverter
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
