@@ -29,7 +29,7 @@ def create_arg_parser():
     parser.add_argument('--to-html', action='store_true', help='convert fetched RSS feed to HTML format')
     parser.add_argument('--to-pdf', action='store_true', help='convert fetched RSS feed to PDF format')
     parser.add_argument('--dest-file', '-f',
-                        help='configure path to store caching and converted HTML and PDF files. Default - None')
+                        help='configure path to store cached and converted HTML and PDF files. Default - None')
     return parser.parse_args()
 
 
