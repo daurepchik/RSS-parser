@@ -1,5 +1,6 @@
 import argparse
 import logging
+from pathlib import Path
 import re
 
 from exceptions.custom_exceptions import ArgumentError
@@ -27,6 +28,8 @@ def create_arg_parser():
     parser.add_argument('--date', '-d', help='get news from cache. Date format: YYYYMMDD')
     parser.add_argument('--to-html', action='store_true', help='convert fetched RSS feed to HTML format')
     parser.add_argument('--to-pdf', action='store_true', help='convert fetched RSS feed to PDF format')
+    parser.add_argument('--dest-file', '-f',
+                        help='configure path to store caching and converted HTML and PDF files. Default - None')
     return parser.parse_args()
 
 
@@ -42,10 +45,16 @@ def check_args(args):
     if args.limit is not None and int(args.limit) < 1:
         logger.error('"limit" argument is less than 1. Should be greater than or equal to 1')
         raise ArgumentError('"limit" argument is less than 1')
-    if not args.URL and not args.date:
+    if not args.URL and not args.date and not args.dest_file:
         logger.error('The required argument "URL" is missing')
         raise ArgumentError('The required argument "URL" is missing')
     if args.date and not re.compile(r'\d{8}').fullmatch(args.date):
         logger.error('The "date" argument is not in the correct format')
         raise ArgumentError('The "date" argument is not in the correct format')
+    if args.dest_file and not Path(args.dest_file).exists() and not args.dest_file == 'None':
+        logger.error('Incorrect folder path. Try putting the path in quotes')
+        raise ArgumentError()
+    elif args.dest_file and not Path(args.dest_file).is_dir() and not args.dest_file == 'None':
+        logger.error('Incorrect folder type')
+        raise ArgumentError()
     logger.info('OK. Argument Parser arguments was checked')

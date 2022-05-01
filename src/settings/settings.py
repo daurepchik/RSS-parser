@@ -1,7 +1,12 @@
 from pathlib import Path
 
 """Settings of the program"""
+import logging
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+from settings.USER_PATH import USER_PATH
+
+logger = logging.getLogger('RSSReader.settings')
 
 # Choose one logger level from [DEBUG, INFO, WARNING, ERROR, CRITICAL]. Default - INFO
 LOGGER_LEVEL = INFO
@@ -13,18 +18,16 @@ SHRUG_EMOJI = r'¯\_(ツ)_/¯'
 # Setting root path for project's caching and html formatting
 ROOT_PATH = Path.home() / 'Desktop' / 'RSS-READER'
 
-# SETUP YOUR PATH HERE
-USER_PATH = None
-# END SETUP YOUR PATH
-
-if USER_PATH:
+if USER_PATH.title() != "None":
     USER_PATH = Path(USER_PATH)
-    if USER_PATH.exists() and USER_PATH.is_dir():
+    if USER_PATH.exists():
         ROOT_PATH = USER_PATH / 'RSS-READER'
-    elif not USER_PATH.exists():
-        exit('Incorrect folder path.\nExiting')
-    elif not USER_PATH.is_dir():
-        exit('Incorrect folder type.\nExiting')
+    else:
+        logger.error(f'Something wrong with {USER_PATH}')
+        logger.info('Changing files destination folder to Default')
+        with open('settings/USER_PATH.py', 'w', encoding='utf-8') as fw:
+            fw.write(f'USER_PATH = "None"')
+        logger.info(f'OK. Destination folder is changed to {ROOT_PATH}')
 
 if not ROOT_PATH.exists():
     ROOT_PATH.mkdir()
